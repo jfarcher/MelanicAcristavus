@@ -74,7 +74,7 @@
 
     - name: Check if docker key exists
       stat:
-        path: /etc/apt/keyrings/docker.asc
+        path: /etc/apt/keyrings/docker.gpg
       register: docker_gpg
 
     # TODO: cleanup docker.asc
@@ -85,19 +85,19 @@
       when: not docker_gpg.stat.exists
 
     - name: Dearmor docker asc
-      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/docker.asc /tmp/docker.asc
+      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.asc
       when: not docker_gpg.stat.exists
 
     - name: Add docker apt repository.
       apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
         state: present
         update_cache: yes
         filename: docker
 
     - name: Check if kubernetes key exists
       stat:
-        path: /etc/apt/keyrings/kubernetes.asc
+        path: /etc/apt/keyrings/kubernetes.gpg
       register: kubernetes_gpg
 
     # TODO: cleanup docker.asc
@@ -108,13 +108,13 @@
       when: not kubernetes_gpg.stat.exists
 
     - name: Dearmor docker asc
-      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/kubernetes.asc /tmp/kubernetes.asc
+      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/kubernetes.gpg /tmp/kubernetes.asc
       when: not kubernetes_gpg.stat.exists
 
 
     - name: add Kubernetes' APT repository
       apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
         state: present
         update_cache: yes
 
