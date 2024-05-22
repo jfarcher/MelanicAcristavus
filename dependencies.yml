@@ -62,15 +62,34 @@
         - ca-certificates
         - curl
         - gpg
+    - name: Check if docker key exists
+      stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_gpg
+    - name: Create APT keyring directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
 
-    - name: Add an Docker Apt signing key
-      ansible.builtin.apt_key:
+    # TODO: cleanup docker.asc
+    - name: Download docker armored signature
+      get_url:
         url: https://download.docker.com/linux/debian/gpg
-        state: present
+        dest: /tmp/docker.asc
+      when: not docker_gpg.stat.exists
+
+    # TODO: Make sure gnupg/gnupg2 is installed
+    - name: Dearmor docker asc
+      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.asc
+      when: not docker_gpg.stat.exists
+
 
     - name: add Docker's APT repository
       apt_repository:
-        repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }} signed-by=/etc/apt/keyrings/docker-apt-keyring.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
         state: present
         update_cache: yes
   
