@@ -65,7 +65,7 @@
 
     - name: Add an Docker Apt signing key
       ansible.builtin.apt_key:
-        url: https:////download.docker.com/linux/debian/gpg
+        url: https://download.docker.com/linux/debian/gpg
         state: present
 
     - name: add Docker's APT repository
