@@ -89,9 +89,9 @@
     - name: Add docker apt repository.
       apt_repository:
         repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
-       state: present
-       update_cache: yes
-       filename: docker
+        state: present
+        update_cache: yes
+        filename: docker
 
 
 
