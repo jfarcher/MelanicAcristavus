@@ -157,3 +157,13 @@
         url: "https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64"
         dest: "/usr/local/sbin/runc"
         mode: "0755"
+
+    - name: set bridge-nf-call-iptables
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+
+    - name: set ip_forward
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
