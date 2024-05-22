@@ -54,21 +54,14 @@
 
     - name: apply sysctl params without reboot
       command: sysctl --system
-
-    - name: install APT Transport HTTPS
+    - name: 2. Install dependency packages
       apt:
-        name: apt-transport-https
-        state: present
-
-    - name: install CA Certificates
-      apt:
-        name: ca-certificates
-        state: present
-
-    - name: install Curl
-      apt:
-        name: curl
-        state: present
+        name={{ item }}
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gpg
 
     - name: add Docker apt-key
       get_url:
