@@ -43,5 +43,32 @@
     - name: kubeadm pull images
       shell: sudo kubeadm config images pull
 
-        #    - name: kubeadm init
-        #shell: sudo kubeadm init
+    - name: check if kubernetes is already set
+      find:
+        paths: /var/lib/kubelet/
+        patterns: config.yaml
+      register: kubeletSet
+
+    - name: End the play for hosts are already setup
+      meta: end_host
+      when:
+        - kubeletSet.matched > 0
+
+    - name: initialize the cluster
+      shell: kubeadm init
+
+    - name: copies admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/jon/.kube/config
+        remote_src: yes
+          owner: jon
+          group: jon
+
+    - name: install Pod network
+      become: yes
+      become_user: jon
+      shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+      args:
+        chdir: /home/jon/
+
