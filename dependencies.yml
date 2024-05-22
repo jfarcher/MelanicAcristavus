@@ -70,7 +70,7 @@
         name: curl
         state: present
 
-   - name: add Docker apt-key
+    - name: add Docker apt-key
       get_url:
         url: https://download.docker.com/linux/debian/gpg
         dest: /etc/apt/keyrings/docker-apt-keyring.asc
