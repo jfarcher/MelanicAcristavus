@@ -144,8 +144,8 @@
     - name: configuring discard layers form Containerd
       lineinfile:
         path: /etc/containerd/config.toml
-        regexp: '            discard_unpacked_layers = false'
-        line: '            discard_unpacked_layers = true'
+        regexp: '      discard_unpacked_layers = false'
+        line: '      discard_unpacked_layers = true'
     - name: enable the Containerd service and start it
       systemd:
         name: containerd
