@@ -28,6 +28,14 @@
         block: |
              overlay
              br_netfilter
+    - name: Add the overlay module
+      community.general.modprobe:
+        name: overlay
+        state: present
+    - name: Add the br_netfilter module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
 
     - name: create an empty file for Kubernetes sysctl params
       copy:
@@ -50,5 +58,15 @@
     - name: install APT Transport HTTPS
       apt:
         name: apt-transport-https
+        state: present
+
+    - name: install CA Certificates
+      apt:
+        name: ca-certificates
+        state: present
+
+    - name: install Curl
+      apt:
+        name: curl
         state: present
 
