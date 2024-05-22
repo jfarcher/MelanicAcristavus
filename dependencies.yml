@@ -127,3 +127,28 @@
       file:
         path: /etc/containerd
         state: directory
+    - name: create Containerd directory
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: add Containerd configuration
+      shell: /usr/bin/containerd config default > /etc/containerd/config.toml
+
+    - name: configuring the systemd cgroup driver for Containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '            SystemdCgroup = false'
+        line: '            SystemdCgroup = true'
+
+    - name: enable the Containerd service and start it
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
+        daemon-reload: yes
+    - name: Downloading runc
+      ansible.builtin.get_url:
+        url: "https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64"
+        dest: "/usr/local/sbin/runc"
+        mode: "0755"
