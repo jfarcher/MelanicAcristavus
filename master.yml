@@ -1,0 +1,36 @@
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Check if kubernetes key exists
+      stat:
+        path: /etc/apt/keyrings/kubernetes.gpg
+      register: kubernetes_gpg
+
+    # TODO: cleanup docker.asc
+    - name: Download docker armored signature
+      get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+        dest: /tmp/kubernetes.asc
+      when: not kubernetes_gpg.stat.exists
+
+    - name: Dearmor docker asc
+      command: /usr/bin/gpg --dearmor -o /etc/apt/keyrings/kubernetes.gpg /tmp/kubernetes.asc
+      when: not kubernetes_gpg.stat.exists
+
+
+    - name: add Kubernetes' APT repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+        state: present
+        update_cache: yes
+
+    - name: Install kubelet packages
+      apt:
+        name={{ item }}
+      with_items:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+    - name: add setup crictl
+      shell: crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock
