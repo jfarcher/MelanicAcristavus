@@ -70,3 +70,14 @@
         name: curl
         state: present
 
+   - name: add Docker apt-key
+      get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker-apt-keyring.asc
+        mode: '0644'
+        force: true
+    - name: add Docker's APT repository
+      apt_repository:
+        repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }} signed-by=/etc/apt/keyrings/docker-apt-keyring.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        state: present
+        update_cache: yes
