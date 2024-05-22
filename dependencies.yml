@@ -63,23 +63,21 @@
         - curl
         - gpg
 
-    - name: add Docker apt-key
-      get_url:
-        url: https://download.docker.com/linux/debian/gpg
-        dest: /etc/apt/keyrings/docker-apt-keyring.asc
-        mode: '0644'
-        force: true
+    - name: Add an Docker Apt signing key
+      ansible.builtin.apt_key:
+        url: https:////download.docker.com/linux/debian/gpg
+        state: present
+
     - name: add Docker's APT repository
       apt_repository:
         repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }} signed-by=/etc/apt/keyrings/docker-apt-keyring.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
         state: present
         update_cache: yes
-    - name: add Kubernetes apt-key
-      get_url:
+  
+    - name: Add an Docker Apt signing key
+      ansible.builtin.apt_key:
         url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
-        dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
-        mode: '0644'
-        force: true
+        state: present
 
     - name: add Kubernetes' APT repository
       apt_repository:
